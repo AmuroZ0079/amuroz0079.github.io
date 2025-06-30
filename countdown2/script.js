@@ -26,7 +26,7 @@ function startTimer() {
 
   const preview = document.getElementById("timerPreview");
   const optionsParam = selectedStyle === 'flipdown' ? `&options=${encodeURIComponent(JSON.stringify(flipdownOptions))}` : '';
-  preview.innerHTML = `<iframe src="embed.html?datetime=${encodeURIComponent(datetimeInput)}&style=${encodeURIComponent(selectedStyle)}${optionsParam}" width="500" height="${iframeHeight}" style="border:none;"></iframe>`;
+  preview.innerHTML = `<iframe src="https://amuroz0079.github.io/countdown2/embed.html?datetime=${encodeURIComponent(datetimeInput)}&style=${encodeURIComponent(selectedStyle)}${optionsParam}" width="500" height="${iframeHeight}" style="border:none;"></iframe>`;
 }
 
 function generateEmbedCode(dateTime, style, options = {}) {
@@ -46,7 +46,7 @@ function generateEmbedCode(dateTime, style, options = {}) {
     }
   }
   
-  const iframe = `<iframe src="countdown2/embed.html?datetime=${encodedDate}&style=${encodedStyle}${optionsParam}" width="500" height="${iframeHeight}" style="border:none;"></iframe>`;
+  const iframe = `<iframe src="https://amuroz0079.github.io/countdown2/embed.html?datetime=${encodedDate}&style=${encodedStyle}${optionsParam}" width="500" height="${iframeHeight}" style="border:none;"></iframe>`;
   document.getElementById("embedCode").value = iframe;
 }
 
