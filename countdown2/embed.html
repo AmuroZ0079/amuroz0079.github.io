@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Embedded Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.css">
+  
+  <style id="dynamicStyles"></style>
+</head>
+<body>
+  <div id="timer" class="flip-timer"></div>
+  <div id="flipdown" class="flipdown" style="display:none;"></div>
+  <div id="digitalClassic" style="display:none;" class="digital-classic-timer"></div>
+
+  <!-- เพิ่ม Circular Countdown แบบเดี่ยว -->
+  <div id="circularContainer" class="circular-timer" style="display:none;">
+    <svg width="140" height="140">
+      <circle r="60" cx="70" cy="70" stroke="#eee" stroke-width="10" fill="none"/>
+      <circle id="progressCircle" r="60" cx="70" cy="70" stroke="#00bcd4" stroke-width="10" fill="none"/>
+    </svg>
+    <div class="time-label" id="circularTime">00:00</div>
+  </div>
+
+  <!-- Multi-Ring Countdown - 4 rings -->
+  <div id="multiRingContainer" class="ring-timers" style="display: none;">
+    <!-- Days -->
+    <div class="ring-unit">
+      <svg width="100" height="100">
+        <circle class="bg" r="45" cx="50" cy="50"/>
+        <circle id="ringDays" class="progress" r="45" cx="50" cy="50"/>
+      </svg>
+      <div class="ring-label" id="labelDays">0d</div>
+    </div>
+
+    <!-- Hours -->
+    <div class="ring-unit">
+      <svg width="100" height="100">
+        <circle class="bg" r="45" cx="50" cy="50"/>
+        <circle id="ringHours" class="progress" r="45" cx="50" cy="50"/>
+      </svg>
+      <div class="ring-label" id="labelHours">00h</div>
+    </div>
+
+    <!-- Minutes -->
+    <div class="ring-unit">
+      <svg width="100" height="100">
+        <circle class="bg" r="45" cx="50" cy="50"/>
+        <circle id="ringMinutes" class="progress" r="45" cx="50" cy="50"/>
+      </svg>
+      <div class="ring-label" id="labelMinutes">00m</div>
+    </div>
+
+    <!-- Seconds -->
+    <div class="ring-unit">
+      <svg width="100" height="100">
+        <circle class="bg" r="45" cx="50" cy="50"/>
+        <circle id="ringSeconds" class="progress" r="45" cx="50" cy="50"/>
+      </svg>
+      <div class="ring-label" id="labelSeconds">00s</div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.js"></script>
+  <script src="circular-timer.js"></script> 
+  <script>
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+  
+    const datetime = getParam("datetime");
+    const style = getParam("style") || "flip-timer";
+    const optionsParam = getParam("options");
+  
+    if (datetime) {
+      const future = new Date(datetime);
+  
+      const timerEl = document.getElementById("timer");
+      const flipdownEl = document.getElementById("flipdown");
+      const digitalClassicEl = document.getElementById("digitalClassic");
+      const circularEl = document.getElementById("circularContainer");
+      const multiRingEl = document.getElementById("multiRingContainer");
+  
+      // ซ่อนทุกอันก่อน
+      timerEl.style.display = "none";
+      flipdownEl.style.display = "none";
+      digitalClassicEl.style.display = "none";
+      circularEl.style.display = "none";
+      multiRingEl.style.display = "none";
+
+      if (style === "flipdown") {
+        flipdownEl.style.display = "block";
+        
+        // Parse customization options
+        let options = {};
+        if (optionsParam) {
+          try {
+            options = JSON.parse(decodeURIComponent(optionsParam));
+          } catch (e) {
+            console.error('Error parsing options:', e);
+          }
+        }
+        
+        // Wrap flipdown in custom wrapper for background styling
+        if (options.backgroundColor || options.borderRadius) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flipdown-custom-wrapper';
+          flipdownEl.parentNode.insertBefore(wrapper, flipdownEl);
+          wrapper.appendChild(flipdownEl);
+        }
+        
+        // Apply customizations AFTER FlipDown is initialized
+        setTimeout(() => {
+          applyFlipDownCustomizations(options);
+        }, 200);
+        
+        const unixTime = Math.floor(future.getTime() / 1000);
+        const flipDown = new FlipDown(unixTime);
+        
+        // Apply theme
+        if (options.theme && options.theme === 'light') {
+          flipdownEl.classList.add('flipdown-theme-light');
+        }
+        
+        // Apply size with proper container adjustment
+        if (options.size && options.size !== 'normal') {
+          flipdownEl.classList.add(`flipdown-size-${options.size}`);
+          // Adjust body and container for proper sizing
+          if (options.size === 'large') {
+            document.body.style.minHeight = '320px';
+            document.body.style.paddingTop = '40px';
+            flipdownEl.style.marginTop = '30px';
+          } else if (options.size === 'small') {
+            document.body.style.minHeight = '200px';
+            document.body.style.paddingTop = '30px';
+            flipdownEl.style.marginTop = '20px';
+          }
+        } else {
+          // Normal size
+          document.body.style.minHeight = '260px';
+          document.body.style.paddingTop = '35px';
+          flipdownEl.style.marginTop = '25px';
+        }
+        
+        // Start FlipDown
+        flipDown.start().ifEnded(() => {
+          console.log("Time's up!");
+        });
+        
+        // Handle headings visibility
+        if (options.headings === false) {
+          setTimeout(() => {
+            const headings = flipdownEl.querySelectorAll('.rotor-group-heading');
+            headings.forEach(heading => heading.style.display = 'none');
+          }, 100);
+        }
+      }
+      else if (style === "digital-classic") {
+        digitalClassicEl.style.display = "block";
+        function updateClassic() {
+          const now = new Date();
+          const diff = future - now;
+  
+          if (diff <= 0) {
+            digitalClassicEl.textContent = "Time's Up!";
+            clearInterval(interval);
+            return;
+          }
+  
+          const d = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+          const h = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+          const m = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
+          const s = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+  
+          digitalClassicEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+        }
+  
+        updateClassic();
+        const interval = setInterval(updateClassic, 1000);
+      } 
+      else if (style === "circular") {
+        circularEl.style.display = "block";
+        startCircularTimer(future);
+      }
+      else if (style === "multi-ring") {
+        multiRingEl.style.display = "flex";
+        updateRing(future);
+      }
+      else {
+        // default: flip-timer
+        timerEl.style.display = "flex";
+        startCountdown(future);
+      }
+    }
+    
+    function applyFlipDownCustomizations(options) {
+      if (!options || Object.keys(options).length === 0) return;
+      
+      let css = '';
+      
+      // Fix accent color with more aggressive selectors
+      if (options.accentColor) {
+        css += `
+          .flipdown .rotor-group .rotor-group-heading,
+          .flipdown .rotor-group-heading,
+          div.flipdown .rotor-group-heading {
+            color: ${options.accentColor} !important;
+            font-weight: bold !important;
+          }
+        `;
+      }
+      
+      // Fix text color for numbers with very specific selectors
+      if (options.textColor) {
+        css += `
+          .flipdown .rotor,
+          .flipdown .rotor .rotor-leaf,
+          .flipdown .rotor .rotor-leaf-rear,
+          .flipdown .rotor .rotor-leaf-front,
+          .flipdown .rotor .rotor-top,
+          .flipdown .rotor .rotor-bottom,
+          .flipdown .rotor div,
+          .flipdown .rotor span {
+            color: ${options.textColor} !important;
+          }
+        `;
+      }
+      
+      // Fix border radius for individual rotors
+      if (options.borderRadius) {
+        css += `
+          .flipdown .rotor {
+            border-radius: ${options.borderRadius}px !important;
+            overflow: hidden !important;
+          }
+          .flipdown .rotor .rotor-top {
+            border-top-left-radius: ${options.borderRadius}px !important;
+            border-top-right-radius: ${options.borderRadius}px !important;
+          }
+          .flipdown .rotor .rotor-bottom {
+            border-bottom-left-radius: ${options.borderRadius}px !important;
+            border-bottom-right-radius: ${options.borderRadius}px !important;
+          }
+          .flipdown .rotor .rotor-leaf {
+            border-radius: ${options.borderRadius}px !important;
+          }
+        `;
+      }
+      
+      // Apply wrapper styling with enhanced border radius
+      if (options.backgroundColor || options.borderRadius) {
+        css += `
+          .flipdown-custom-wrapper {
+            ${options.backgroundColor ? `background-color: ${options.backgroundColor} !important;` : ''}
+            ${options.borderRadius ? `border-radius: ${options.borderRadius}px !important;` : ''}
+            padding: 20px 15px 15px 15px !important;
+            display: inline-block !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+            margin-top: 10px !important;
+          }
+        `;
+      }
+      
+      if (css) {
+        const styleElement = document.getElementById('dynamicStyles');
+        styleElement.textContent = css;
+        
+        // Debug: log the applied CSS and options
+        console.log('Applied CSS:', css);
+        console.log('Options:', options);
+      }
+    }
+  
+    function startCountdown(targetTime) {
+      const timerEl = document.getElementById("timer");
+  
+      function updateFlip(unit, value) {
+        const container = document.getElementById(unit);
+        const current = container.getAttribute('data-value');
+        if (current !== value) {
+          container.setAttribute('data-value', value);
+          container.querySelector('.flip-card').style.transform = 'rotateX(360deg)';
+          setTimeout(() => {
+            container.querySelector('.flip-card').style.transform = 'rotateX(0deg)';
+            container.querySelector('.flip-card').textContent = value;
+          }, 300);
+        }
+      }
+  
+      function update() {
+        const now = new Date();
+        const diff = targetTime - now;
+  
+        if (diff <= 0) {
+          timerEl.innerHTML = "<h2>Time's Up!</h2>";
+          clearInterval(interval);
+          return;
+        }
+  
+        const d = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+        const h = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+        const m = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
+        const s = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+  
+        updateFlip('days', d);
+        updateFlip('hours', h);
+        updateFlip('minutes', m);
+        updateFlip('seconds', s);
+      }
+  
+      timerEl.innerHTML = ['days','hours','minutes','seconds'].map(id => `
+        <div class="flip-unit" id="${id}" data-value="00">
+          <div class="flip-card">00</div>
+          <div class="flip-label">${id.charAt(0).toUpperCase() + id.slice(1)}</div>
+        </div>
+      `).join('');
+  
+      update();
+      const interval = setInterval(update, 1000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Countdown Timer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Sales Countdown Timer</h1>
+
+    <div class="input-group">
+      <label for="datetime">Select Date and Time:</label>
+      <input type="datetime-local" id="datetime" />
+      
+      <label for="styleSelect">Timer Style:</label>
+      <select id="styleSelect" onchange="toggleCustomOptions()">
+        <option value="flip-timer">Flip Timer</option>
+        <option value="flipdown">FlipDown</option>
+        <option value="digital-classic">Digital Classic</option>
+        <option value="circular">Circular Countdown</option>
+        <option value="multi-ring">Multi-Ring Timer</option>
+      </select>
+
+      <!-- FlipDown Customization Options -->
+      <div id="flipdownOptions" class="customization-panel" style="display: none;">
+        <h4>FlipDown Customization</h4>
+        
+        <div class="option-row">
+          <label for="flipdownTheme">Theme:</label>
+          <select id="flipdownTheme">
+            <option value="dark">Dark (Default)</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownHeadings">Show Headings:</label>
+          <input type="checkbox" id="flipdownHeadings" checked>
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownSize">Size:</label>
+          <select id="flipdownSize">
+            <option value="normal">Normal</option>
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownAccentColor">Accent Color:</label>
+          <input type="color" id="flipdownAccentColor" value="#ff6b6b">
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownBackgroundColor">Background Color:</label>
+          <input type="color" id="flipdownBackgroundColor" value="#1e1f26">
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownTextColor">Text Color:</label>
+          <input type="color" id="flipdownTextColor" value="#ffffff">
+        </div>
+
+        <div class="option-row">
+          <label for="flipdownBorderRadius">Border Radius (px):</label>
+          <input type="range" id="flipdownBorderRadius" min="0" max="20" value="6">
+          <span id="radiusValue">6px</span>
+        </div>
+      </div>
+
+      <button onclick="startTimer()">Start Countdown</button>
+    </div>
+
+    <div id="timerPreview"></div>
+
+    <div class="embed-section">
+      <h3>Embed Code:</h3>
+      <textarea id="embedCode" rows="4" readonly></textarea>
+      <button onclick="copyEmbed()">Copy Embed Code</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.js"></script>
+</body>
+</html>

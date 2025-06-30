@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Embedded Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.css">
+</head>
+<body>
+  <div id="timer" class="flip-timer"></div>
+  <div id="flipdown" class="flipdown" style="display:none;"></div>
+
+  <script src="https://unpkg.com/flipdown@0.3.2/dist/flipdown.min.js"></script>
+  <script>
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    const datetime = getParam("datetime");
+    const style = getParam("style") || "flip-timer";
+
+    if (datetime) {
+      const future = new Date(datetime);
+      if (style === "flipdown") {
+        document.getElementById("timer").style.display = "none";
+        const unixTime = Math.floor(future.getTime() / 1000);
+        new FlipDown(unixTime).start().ifEnded(() => {
+          console.log("Time's up!");
+        });
+      } else {
+        document.getElementById("flipdown").style.display = "none";
+        startCountdown(future);
+      }
+    }
+
+    function startCountdown(targetTime) {
+      const timerEl = document.getElementById("timer");
+
+      function updateFlip(unit, value) {
+        const container = document.getElementById(unit);
+        const current = container.getAttribute('data-value');
+        if (current !== value) {
+          container.setAttribute('data-value', value);
+          container.querySelector('.flip-card').style.transform = 'rotateX(360deg)';
+          setTimeout(() => {
+            container.querySelector('.flip-card').style.transform = 'rotateX(0deg)';
+            container.querySelector('.flip-card').textContent = value;
+          }, 300);
+        }
+      }
+
+      function update() {
+        const now = new Date();
+        const diff = targetTime - now;
+
+        if (diff <= 0) {
+          timerEl.innerHTML = "<h2>Time's Up!</h2>";
+          clearInterval(interval);
+          return;
+        }
+
+        const d = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+        const h = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+        const m = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
+        const s = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+        updateFlip('days', d);
+        updateFlip('hours', h);
+        updateFlip('minutes', m);
+        updateFlip('seconds', s);
+      }
+
+      timerEl.innerHTML = ['days','hours','minutes','seconds'].map(id => `
+  <div class="flip-unit" id="${id}" data-value="00">
+    <div class="flip-card">00</div>
+    <div class="flip-label">${id.charAt(0).toUpperCase() + id.slice(1)}</div>
+  </div>
+`).join('');
+
+      update();
+      const interval = setInterval(update, 1000);
+    }
+  </script>
+</body>
+</html>

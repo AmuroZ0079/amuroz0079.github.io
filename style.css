@@ -1,0 +1,200 @@
+/* Gundam Countdown Timer CSS */
+:root {
+  --gundam-blue: #1a237e;
+  --gundam-red: #d32f2f;
+  --gundam-yellow: #ffd700;
+  --gundam-gray: #424242;
+  --gundam-light: #e0e0e0;
+}
+body {
+  font-family: 'Orbitron', sans-serif;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--gundam-gray) 0%, #000000 100%);
+  min-height: 100vh;
+  margin: 0;
+  color: var(--gundam-light);
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(26, 35, 126, 0.9);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(211, 47, 47, 0.3);
+  border: 2px solid var(--gundam-red);
+}
+h1 {
+  color: var(--gundam-yellow);
+  text-align: center;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.timer-preview {
+  font-size: 2.5rem;
+  margin: 30px 0;
+  text-align: center;
+  font-weight: 700;
+}
+.timer-unit {
+  display: inline-block;
+  padding: 15px 25px;
+  margin: 0 5px;
+  background: linear-gradient(145deg, var(--gundam-blue), #000);
+  border: 2px solid var(--gundam-red);
+  border-radius: 10px;
+  color: var(--gundam-light);
+  text-shadow: 0 0 5px var(--gundam-yellow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.timer-unit::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 12px;
+  border: 2px solid var(--gundam-yellow);
+  opacity: 0.15;
+  pointer-events: none;
+  box-shadow: 0 0 20px 8px var(--gundam-yellow);
+  animation: shine-border 2.5s linear infinite;
+  z-index: 0;
+}
+@keyframes shine-border {
+  0% { opacity: 0.15; }
+  50% { opacity: 0.35; }
+  100% { opacity: 0.15; }
+}
+.timer-unit:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px var(--gundam-red);
+  border-color: var(--gundam-yellow);
+}
+label {
+  display: block;
+  margin: 15px 0 5px;
+  color: var(--gundam-yellow);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+input[type="datetime-local"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--gundam-red);
+  border-radius: 8px;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--gundam-light);
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s ease;
+}
+input[type="datetime-local"]:focus {
+  border-color: var(--gundam-yellow);
+  outline: none;
+  box-shadow: 0 0 10px var(--gundam-yellow);
+}
+button {
+  background: linear-gradient(145deg, var(--gundam-red), #b71c1c);
+  color: var(--gundam-light);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+button:hover::before {
+  left: 100%;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--gundam-red);
+}
+textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid var(--gundam-red);
+  border-radius: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--gundam-light);
+  resize: vertical;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.expired {
+  animation: pulse 1s infinite;
+  color: var(--gundam-red);
+  text-shadow: 0 0 10px var(--gundam-red);
+}
+.container::before,
+.container::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--gundam-yellow);
+  opacity: 0.5;
+}
+.container::before {
+  top: -10px;
+  left: -10px;
+  border-right: none;
+  border-bottom: none;
+}
+.container::after {
+  bottom: -10px;
+  right: -10px;
+  border-left: none;
+  border-top: none;
+} 
+
+
+.timer-unit.pulse {
+  animation: pop 0.3s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.timer-unit.warning {
+  background: linear-gradient(145deg, #ff5722, #b71c1c);
+  border-color: yellow;
+  color: #fff;
+  box-shadow: 0 0 10px yellow;
+}
